@@ -1,6 +1,6 @@
 // index.js
 const express = require("express");
-const connectDb = require("../config/dbConnection");
+const connectDb = require("./config/dbConnection");
 const dotenv = require("dotenv").config();
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -23,8 +23,8 @@ app.use(express.json());
 
 
 
-app.use("/api/auth", require("../routes/auth"));
-app.use("/api/users", require("../routes/user"));
+app.use("/api/auth", require("./routes/auth"));
+app.use("/api/users", require("./routes/user"));
 
 app.get("/", (req, res) => {
   res.send("API is working ✅");

@@ -1,30 +1,38 @@
+// index.js
 const express = require("express");
-const serverless = require("serverless-http");
 const connectDb = require("../config/dbConnection");
+const dotenv = require("dotenv").config();
+const app = express();
+const PORT = process.env.PORT || 5000;
 const cookieParser = require("cookie-parser");
-const cors = require("cors");
-const dotenv = require("dotenv");
+const cors = require('cors');
 
-dotenv.config();
+
+
+
 connectDb();
 
-const app = express();
-
 app.use(cors({
-  origin: "*", // or your deployed frontend URL
+  origin: "http://localhost:3000", // frontend
   credentials: true,
 }));
+
 app.use(cookieParser());
+
 app.use(express.json());
 
-// Routes
+
+
 app.use("/api/auth", require("../routes/auth"));
 app.use("/api/users", require("../routes/user"));
 
-app.get("/api", (req, res) => {
+app.get("/", (req, res) => {
   res.send("API is working ✅");
 });
 
-// Export for Vercel
-module.exports = app;
-module.exports.handler = serverless(app);
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
+
+

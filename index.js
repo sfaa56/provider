@@ -36,3 +36,6 @@ app.listen(PORT, () => {
 });
 
 
+module.exports = app;
+module.exports.handler = (req, res) => app(req, res); // <-- required for Vercel
+

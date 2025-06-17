@@ -99,7 +99,7 @@ const loginUser = async (req, res) => {
     res.status(200).json({ user });
   } catch (err) {
     console.log("Error logging in user:", err);
-    res.status(500).json({ error: "something went wrong " });
+    res.status(500).json({ error: "something went wrong" });
   }
 };
 

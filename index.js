@@ -13,7 +13,7 @@ const cors = require('cors');
 connectDb();
 
 app.use(cors({
-  origin: "http://localhost:3000", // frontend
+  origin: process.env.front_url, // frontend
   credentials: true,
 }));
 

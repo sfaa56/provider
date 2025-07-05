@@ -104,6 +104,7 @@ const loginUser = async (req, res) => {
       secure: process.env.NODE_ENV === "production", // HTTPS only in production
       // protects against CSRF
       sameSite:"none",
+      domain: ".vercel.app",
       maxAge: 5 * 60 * 60 * 1000, // 5 hours
     });
 

@@ -6,16 +6,16 @@ const cloudinary = require("../config/cloudinary");
 const joi = require("joi");
 
 const userValidationSchema = joi.object({
-  _id:joi.string().optional(),
-  id:joi.string().optional(),
+  _id: joi.string().optional(),
+  id: joi.string().optional(),
   name: joi.string().min(3).required(),
   email: joi.string().email().required(),
   password: joi.string().min(6).required(),
   phoneNumber: joi.string().required(),
   city: joi.string().optional(),
   region: joi.string().optional(),
-  role: joi.string().valid("admin", "user").optional(),
-  avatar:joi.string().optional(),
+  role: joi.string().valid("admin", "user","provider").optional(),
+  avatar: joi.string().optional(),
 });
 
 const getAllUsers = async (req, res) => {
@@ -32,7 +32,6 @@ const getAllUsers = async (req, res) => {
 };
 
 const getUserById = async (req, res) => {
-
   try {
     const user = await User.findById(req.user.id).select("-password");
     if (!user) return res.status(404).json({ error: "User not found" });
@@ -40,26 +39,43 @@ const getUserById = async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
+};
 
+const userPicture = async (req, res) => {
+  const { imageUrl, publicId } = req.body;
+
+  const userId = req.user.id;
+
+  try {
+    const user = await User.findById(userId);
+    if(user&&user.image&&user.image.publicId){
+      await cloudinary.uploader.destroy(user.image.publicId)
+    }
+
+    user.image.publicId=publicId
+    user.image.url= imageUrl
+    await user.save();
+
+    res.json({ success: true, user });
+  } catch (error) {
+    res.status(500).json({ success: false, error: "Update failed" });
+  }
 };
 
 const updateUser = async (req, res) => {
-  const userid = req.params.id
-  const  user  = req.user;
-  console.log("idddddd",userid)
+  const userid = req.params.id;
+  const user = req.user;
+  console.log("idddddd", userid);
   if (req.user.role !== "admin" && req.user.id !== userid) {
     return res.status(403).json({ message: "Access denied" });
   }
   try {
-
     const userToUpdate = await User.findById(user.id);
 
     if (!userToUpdate) {
       res.status(404).json({ message: "User not found" });
       return;
     }
-
-   
 
     let img = "";
     if (req.body.file) {
@@ -81,12 +97,14 @@ const updateUser = async (req, res) => {
 
     Object.assign(userToUpdate, req.body);
 
-   const response = await userToUpdate.save();
+    const response = await userToUpdate.save();
 
     res.status(200).json(response);
   } catch (err) {
-    console.log("err",err)
-    res.status(500).json({ error: "An error occurred while updating the user." });
+    console.log("err", err);
+    res
+      .status(500)
+      .json({ error: "An error occurred while updating the user." });
   }
 };
 
@@ -129,4 +147,5 @@ module.exports = {
   getUserById,
   updateUser,
   deleteUser,
+  userPicture,
 };

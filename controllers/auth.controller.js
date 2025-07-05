@@ -101,10 +101,9 @@ const loginUser = async (req, res) => {
     // ✅ Set JWT in a cookie
     res.cookie("session", token, {
       httpOnly: true, // prevents access from JavaScript
-      secure: process.env.NODE_ENV === "production", // HTTPS only in production
+      secure: true, // HTTPS only in production
       // protects against CSRF
       sameSite:"none",
-      domain: ".vercel.app",
       maxAge: 5 * 60 * 60 * 1000, // 5 hours
     });
 

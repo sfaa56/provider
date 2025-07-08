@@ -13,7 +13,7 @@ const cors = require('cors');
 connectDb();
 
 app.use(cors({
-  origin: process.env.front_url, // frontend
+  origin: "https://front-end-provider-yusefs-projects-b3490cde.vercel.app", // frontend
   credentials: true,
 }));
 

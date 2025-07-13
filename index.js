@@ -25,6 +25,9 @@ app.use(express.json());
 
 app.use("/api/auth", require("./routes/Auth"));
 app.use("/api/users", require("./routes/user"));
+app.use("/api/cities", require("./routes/city.routes"));
+app.use("/api/specialties",require("./routes/specialty.routes"));
+app.use("/api/admin",require("./routes/admin.routes"));
 
 app.use("/", (req, res) => {
   res.send("API is working ✅");

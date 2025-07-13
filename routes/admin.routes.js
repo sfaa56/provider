@@ -2,7 +2,7 @@
 const express = require('express');
 
 const { verifyUser,getOverviewStats,toggleBanStatus } = require('../controllers/admin.controller');
-const validateToken = require('../middlewares/validateToken');
+const validateToken = require('../middleware/validateToken');
 
 const router = express.Router();
 

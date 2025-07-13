@@ -27,13 +27,13 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: false,
     },
-    region: {
+    postalCode: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Region",
+      ref: "PostalCodeSchema",
     },
-    city: {
+    SubSpecialty: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "City",
+      ref: "SubSpecialty",
     },
     image: {
       publicId: { type: String },

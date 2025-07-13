@@ -1,4 +1,4 @@
-const Region = require("../models/Region");
+const Region = require("../models/District");
 const User = require("../models/User");
 
 exports.createRegion = async (req, res) => {

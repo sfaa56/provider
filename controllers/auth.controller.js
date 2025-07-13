@@ -11,7 +11,22 @@ const userValidationSchema = joi.object({
   phoneNumber: joi.string().required(),
   city: joi.string().optional(),
   region: joi.string().optional(),
-  role: joi.string().valid("admin", "user").optional(),
+  role: joi.string().valid("admin", "client","provider").optional(),
+  isVerified:joi.boolean().optional(),
+  SubSpecialty:joi.string().optional(),
+  image: joi.object({
+    publicId: joi.string().optional(),
+    url: joi.string().optional(),
+  }).optional(),
+  postalCode: joi.string().optional(),
+});
+
+const passwordValidationSchema = joi.object({
+  oldPassword: joi.string().min(6).required(),
+  newPassword: joi.string().min(6).required().invalid(joi.ref("oldPassword")),
+  confirmPassword: joi
+    .valid(joi.ref("newPassword"))
+    .messages({ "any.only": "Passwords do not match" }).required(),
 });
 
 const generateAccessToken = (user) => {
@@ -71,7 +86,7 @@ const registerUser = async (req, res) => {
 };
 
 const loginUser = async (req, res) => {
-  console.log("hiii")
+  console.log("hiii");
   try {
     const user = await User.findOne({ email: req.body.email });
 
@@ -93,7 +108,7 @@ const loginUser = async (req, res) => {
     res.cookie("session", token, {
       httpOnly: true, // prevents access from JavaScript
       secure: process.env.NODE_ENV === "production", // HTTPS only in production
-       sameSite: "none", // protects against CSRF
+      // protects against CSRF
       maxAge: 5 * 60 * 60 * 1000, // 5 hours
     });
 
@@ -114,8 +129,47 @@ const logoutUser = (req, res) => {
   res.status(200).json({ message: "Logged out successfully" });
 };
 
+const ChangePassword = async (req, res) => {
+  try {
+    const id = req.user.id;
+
+    const { error, value } = passwordValidationSchema.validate(req.body, {
+      abortEarly: false, // show all errors at once (optional)
+    });
+
+    if (error) {
+      return res
+        .status(400)
+        .json({ error: error.details.map((d) => d.message) });
+    }
+
+    const { oldPassword, newPassword } = value;
+
+    const user = await User.findById(id).select("+password");
+
+    if (!user) {
+      res.status(404).json({ error: "User not found" });
+    }
+
+    const isMatch = await bcrypt.compare(oldPassword, user.password);
+
+    if (!isMatch) {
+      return res.status(401).json({ error: "Old password is incorrect" });
+    }
+
+    user.password = await bcrypt.hash(newPassword, 10); // 12 salt rounds is a good balance
+    await user.save();
+
+    return res.status(200).json({ message: "Password updated successfully" });
+  } catch (error) {
+    console.error("Change‑password error:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
-  logoutUser
+  logoutUser,
+  ChangePassword,
 };

@@ -110,6 +110,7 @@ const loginUser = async (req, res) => {
       secure: process.env.NODE_ENV === "production", // HTTPS only in production
       // protects against CSRF
       maxAge: 5 * 60 * 60 * 1000, // 5 hours
+      sameSite: "none", // protects against CSRF
     });
 
     res.status(200).json({ user });

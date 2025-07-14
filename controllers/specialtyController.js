@@ -15,7 +15,7 @@ exports.createSpecialty = async (req, res) => {
       const subSpecialtyPromises = subSpecialties.map((sub) => {
         console.log("sub", sub);
         return new SubSpecialty({
-          name: sub,
+          name: sub.name,
           specialty: newSpecialty._id,
         }).save();
       });
